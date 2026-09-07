@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yaaw3d.dev/schemas/production-brief.schema.json",
+  "title": "yaaw-3D Production Brief",
+  "type": "object",
+  "required": ["job_id", "version", "source_request", "status", "requirements", "unresolved", "contradictions", "acceptance"],
+  "properties": {
+    "job_id": {"type": "string", "minLength": 1},
+    "version": {"type": "integer", "minimum": 1},
+    "source_request": {"type": "string", "minLength": 1},
+    "status": {"enum": ["draft", "locked"]},
+    "requirements": {"type": "object", "additionalProperties": {"type": "string"}},
+    "unresolved": {"type": "array", "items": {"type": "string"}},
+    "assumptions": {"type": "array", "items": {"type": "string"}},
+    "contradictions": {"type": "array", "items": {"type": "string"}},
+    "acceptance": {"type": "object"}
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yaaw3d.dev/schemas/job-state.schema.json",
+  "title": "yaaw-3D Job State",
+  "type": "object",
+  "required": ["job_id", "state", "brief_version", "plan_version", "iteration", "critic_pass", "validator_pass"],
+  "properties": {
+    "job_id": {"type": "string"},
+    "state": {"enum": ["INTAKE", "AMBIGUITY_REVIEW", "BRIEF_LOCKED", "PLANNING", "BUILDING", "CRITIQUE", "VALIDATION", "CORRECTION", "EXPORT", "COMPLETE", "BLOCKED"]},
+    "brief_version": {"type": "integer", "minimum": 0},
+    "plan_version": {"type": "integer", "minimum": 0},
+    "iteration": {"type": "integer", "minimum": 0},
+    "critic_pass": {"type": "boolean"},
+    "validator_pass": {"type": "boolean"},
+    "blocked_reason": {"type": ["string", "null"]}
+  }
+}

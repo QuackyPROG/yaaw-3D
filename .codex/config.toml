@@ -1,0 +1,23 @@
+# yaaw-3D project defaults.
+# Root: Luna / Max / Fast, as requested.
+model = "gpt-5.6-luna"
+model_reasoning_effort = "max"
+service_tier = "fast"
+model_reasoning_summary = "auto"
+model_verbosity = "medium"
+
+# Keep plan mode deliberate without changing the root default.
+plan_mode_reasoning_effort = "xhigh"
+
+[features]
+multi_agent = true
+memories = true
+goals = true
+
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 6
+default_subagent_model = "gpt-5.6-luna"
+default_subagent_reasoning_effort = "xhigh"
+max_depth = 1
+interrupt_message = true

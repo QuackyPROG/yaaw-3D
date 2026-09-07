@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "yaaw3d"
+version = "0.1.0"
+description = "Contract-first agentic 3D production workflow"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+yaaw3d = "yaaw3d.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,12 @@
+{
+  "purpose": {"choice": "B"},
+  "quality": {"choice": "B"},
+  "style": {"choice": "A"},
+  "geometry": {"choice": "B"},
+  "topology": {"choice": "B"},
+  "physical_accuracy": {"choice": "B"},
+  "materials": {"choice": "B"},
+  "animation": {"choice": "A"},
+  "presentation": {"choice": "A"},
+  "delivery": {"choice": "A"}
+}
