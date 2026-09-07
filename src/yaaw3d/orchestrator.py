@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any
 
 from .contracts import Answer, CorrectionTicket, ProductionBrief, QAReport
-from .questions import by_id, next_batch
+from .questions import by_id, next_batch, required_ids
 from .state_machine import transition
 from .storage import (
     append_event,
@@ -15,23 +15,10 @@ from .storage import (
     write_json,
 )
 
-REQUIRED_INITIAL = {
-    "purpose",
-    "quality",
-    "style",
-    "geometry",
-    "topology",
-    "physical_accuracy",
-    "materials",
-    "animation",
-    "presentation",
-    "delivery",
-}
-
 
 def questions_for(job_dir: Path) -> list[dict[str, Any]]:
     answers = read_json(job_dir / "answers.json")
-    return [q.to_dict() for q in next_batch(set(answers), 10)]
+    return [q.to_dict() for q in next_batch(answers, 10)]
 
 
 def record_answers(job_dir: Path, incoming: dict[str, Any]) -> None:
@@ -48,7 +35,6 @@ def record_answers(job_dir: Path, incoming: dict[str, Any]) -> None:
                 choice=raw.get("choice", "CUSTOM"),
                 custom=raw.get("custom"),
             )
-        # Validation happens by resolving against the canonical question.
         answer.resolved_value(bank[qid])
         existing[qid] = {"choice": answer.choice, "custom": answer.custom}
     write_json(job_dir / "answers.json", existing)
@@ -62,7 +48,7 @@ def compile_brief(job_dir: Path) -> ProductionBrief:
     requirements: dict[str, str] = {}
     unresolved: list[str] = []
 
-    for qid in REQUIRED_INITIAL:
+    for qid in required_ids(answers):
         raw = answers.get(qid)
         if raw is None:
             unresolved.append(qid)
@@ -70,7 +56,6 @@ def compile_brief(job_dir: Path) -> ProductionBrief:
         answer = Answer(question_id=qid, choice=raw["choice"], custom=raw.get("custom"))
         requirements[qid] = answer.resolved_value(bank[qid])
 
-    # Include optional/follow-up answers when present.
     for qid, raw in answers.items():
         if qid in requirements:
             continue
@@ -78,8 +63,6 @@ def compile_brief(job_dir: Path) -> ProductionBrief:
         requirements[qid] = answer.resolved_value(bank[qid])
 
     contradictions: list[str] = []
-    if requirements.get("delivery", "").startswith("Game/web") and requirements.get("quality") == "Hero/cinematic":
-        contradictions.append("Hero/cinematic quality with a game/web delivery target needs an explicit performance/LOD decision.")
     if requirements.get("animation") == "Rigged/deforming/physics-aware animation" and requirements.get("topology") == "Fast/editable; topology secondary":
         contradictions.append("Deforming animation conflicts with topology being secondary; resolve deformation topology requirements.")
 

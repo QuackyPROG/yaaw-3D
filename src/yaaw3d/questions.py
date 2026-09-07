@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from .contracts import Choice, Question
 
 
@@ -44,11 +46,48 @@ QUESTION_BANK: tuple[Question, ...] = (
     _q("naming", "How strict should scene organization be?", "Minimal", "Production naming/collections", "Pipeline-specific naming convention", "B", "Scene hygiene is part of production readiness."),
 )
 
-
-def next_batch(answered_ids: set[str], batch_size: int = 10) -> list[Question]:
-    unresolved = [q for q in QUESTION_BANK if q.id not in answered_ids]
-    return unresolved[:batch_size]
+BASE_REQUIRED: tuple[str, ...] = tuple(q.id for q in QUESTION_BANK[:10])
 
 
 def by_id() -> dict[str, Question]:
     return {q.id: q for q in QUESTION_BANK}
+
+
+def required_ids(answers: dict[str, Any]) -> list[str]:
+    """Return only questions materially required by choices already made."""
+    required = set(BASE_REQUIRED)
+
+    def choice(qid: str) -> str | None:
+        raw = answers.get(qid)
+        if isinstance(raw, str):
+            return raw
+        if isinstance(raw, dict):
+            return raw.get("choice")
+        return None
+
+    if choice("purpose") == "B" or choice("delivery") == "B":
+        required.update({"lod", "scale", "uv", "naming"})
+    if choice("quality") == "C":
+        required.update({"condition", "scale", "uv", "references", "camera", "lighting", "engine"})
+    if choice("materials") == "C":
+        required.update({"condition", "uv", "lighting", "engine"})
+    if choice("animation") in {"B", "C"}:
+        required.add("physics")
+    if choice("animation") == "C":
+        required.add("scale")
+    if choice("presentation") in {"B", "C"}:
+        required.update({"camera", "lighting", "engine"})
+    if choice("presentation") == "C":
+        required.add("references")
+    if choice("physical_accuracy") == "C":
+        required.update({"scale", "references"})
+
+    # Canonical bank order keeps batches stable and reproducible.
+    return [q.id for q in QUESTION_BANK if q.id in required]
+
+
+def next_batch(answers: dict[str, Any], batch_size: int = 10) -> list[Question]:
+    answered_ids = set(answers)
+    needed = set(required_ids(answers))
+    unresolved = [q for q in QUESTION_BANK if q.id in needed and q.id not in answered_ids]
+    return unresolved[:batch_size]

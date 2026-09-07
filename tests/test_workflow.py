@@ -82,6 +82,26 @@ class WorkflowTests(unittest.TestCase):
         record_qa(job, QAReport(domain="technical", passed=True, findings=[]))
         self.assertEqual(load_state(job).state, "EXPORT")
 
+    def test_followups_are_conditional_and_clear_when_answered(self) -> None:
+        job = self.make_job()
+        game_answers = dict(ANSWERS)
+        game_answers["purpose"] = {"choice": "B"}
+        game_answers["delivery"] = {"choice": "B"}
+        record_answers(job, game_answers)
+        followups = {q["id"] for q in questions_for(job)}
+        self.assertEqual(followups, {"scale", "uv", "lod", "naming"})
+        with self.assertRaises(ValueError):
+            lock_brief(job)
+        record_answers(job, {
+            "scale": {"choice": "B"},
+            "uv": {"choice": "B"},
+            "lod": {"choice": "B"},
+            "naming": {"choice": "B"},
+        })
+        self.assertEqual(questions_for(job), [])
+        brief = lock_brief(job)
+        self.assertEqual(brief.status, "locked")
+
 
 if __name__ == "__main__":
     unittest.main()

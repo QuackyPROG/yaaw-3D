@@ -8,5 +8,9 @@
   "materials": {"choice": "B"},
   "animation": {"choice": "A"},
   "presentation": {"choice": "A"},
-  "delivery": {"choice": "A"}
+  "delivery": {"choice": "B"},
+  "scale": {"choice": "B"},
+  "uv": {"choice": "B"},
+  "lod": {"choice": "B"},
+  "naming": {"choice": "B"}
 }
