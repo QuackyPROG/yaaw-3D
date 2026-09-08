@@ -3,16 +3,46 @@
   "$id": "https://yaaw3d.dev/schemas/production-brief.schema.json",
   "title": "yaaw-3D Production Brief",
   "type": "object",
+  "additionalProperties": false,
   "required": ["job_id", "version", "source_request", "status", "requirements", "unresolved", "contradictions", "acceptance"],
   "properties": {
     "job_id": {"type": "string", "minLength": 1},
     "version": {"type": "integer", "minimum": 1},
     "source_request": {"type": "string", "minLength": 1},
     "status": {"enum": ["draft", "locked"]},
-    "requirements": {"type": "object", "additionalProperties": {"type": "string"}},
+    "requirements": {
+      "type": "object",
+      "additionalProperties": {"type": "string", "minLength": 1},
+      "properties": {
+        "purpose": {"type": "string"},
+        "quality": {"type": "string"},
+        "style": {"type": "string"},
+        "geometry": {"type": "string"},
+        "topology": {"type": "string"},
+        "physical_accuracy": {"type": "string"},
+        "materials": {"type": "string"},
+        "animation": {"type": "string"},
+        "presentation": {"type": "string"},
+        "delivery": {"type": "string"}
+      }
+    },
     "unresolved": {"type": "array", "items": {"type": "string"}},
-    "assumptions": {"type": "array", "items": {"type": "string"}},
+    "assumptions": {"type": "array", "items": {"type": "string"}, "default": []},
     "contradictions": {"type": "array", "items": {"type": "string"}},
     "acceptance": {"type": "object"}
-  }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "locked"}}},
+      "then": {
+        "properties": {
+          "requirements": {
+            "required": ["purpose", "quality", "style", "geometry", "topology", "physical_accuracy", "materials", "animation", "presentation", "delivery"]
+          },
+          "unresolved": {"maxItems": 0},
+          "contradictions": {"maxItems": 0}
+        }
+      }
+    }
+  ]
 }

@@ -1,0 +1,7 @@
+{
+  "artifact_id": "asset-v1",
+  "milestone_id": "blockout",
+  "passed": true,
+  "outputs": ["build/asset-v1.blend"],
+  "notes": ["Builder milestone completed."]
+}

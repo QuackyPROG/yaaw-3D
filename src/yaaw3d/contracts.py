@@ -17,6 +17,7 @@ StateName = Literal[
     "COMPLETE",
     "BLOCKED",
 ]
+QADomain = Literal["visual", "technical", "motion", "material", "cinematography"]
 
 
 @dataclass(frozen=True)
@@ -42,6 +43,7 @@ class Question:
             "recommendation": self.recommendation,
             "required": self.required,
             "rationale": self.rationale,
+            "custom": "Provide an exact answer if A/B/C does not fit.",
         }
 
 
@@ -95,11 +97,18 @@ class JobState:
 
 @dataclass
 class QAReport:
-    domain: Literal["visual", "technical", "motion", "material", "cinematography"]
+    domain: QADomain
     passed: bool
     findings: list[str]
+    artifact_id: str = "current"
     evidence: list[str] = field(default_factory=list)
     scores: dict[str, float] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        if not self.artifact_id.strip():
+            raise ValueError("QAReport.artifact_id must be non-empty")
+        if not self.passed and not self.findings:
+            raise ValueError("failed QA reports require at least one finding")
 
 
 @dataclass
@@ -109,3 +118,31 @@ class CorrectionTicket:
     findings: list[str]
     required_changes: list[str]
     acceptance_checks: list[str]
+    artifact_id: str = "current"
+    evidence: list[str] = field(default_factory=list)
+
+
+@dataclass
+class BuildResult:
+    milestone_id: str
+    artifact_id: str
+    passed: bool
+    outputs: list[str] = field(default_factory=list)
+    notes: list[str] = field(default_factory=list)
+
+
+@dataclass
+class ExportReport:
+    artifact_id: str
+    passed: bool
+    files: list[str]
+    evidence: list[str] = field(default_factory=list)
+    findings: list[str] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        if not self.artifact_id.strip():
+            raise ValueError("ExportReport.artifact_id must be non-empty")
+        if self.passed and not self.files:
+            raise ValueError("passed exports require at least one file")
+        if not self.passed and not self.findings:
+            raise ValueError("failed exports require findings")

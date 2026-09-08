@@ -3,9 +3,10 @@
   "$id": "https://yaaw3d.dev/schemas/job-state.schema.json",
   "title": "yaaw-3D Job State",
   "type": "object",
+  "additionalProperties": false,
   "required": ["job_id", "state", "brief_version", "plan_version", "iteration", "critic_pass", "validator_pass"],
   "properties": {
-    "job_id": {"type": "string"},
+    "job_id": {"type": "string", "minLength": 1},
     "state": {"enum": ["INTAKE", "AMBIGUITY_REVIEW", "BRIEF_LOCKED", "PLANNING", "BUILDING", "CRITIQUE", "VALIDATION", "CORRECTION", "EXPORT", "COMPLETE", "BLOCKED"]},
     "brief_version": {"type": "integer", "minimum": 0},
     "plan_version": {"type": "integer", "minimum": 0},

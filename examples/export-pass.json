@@ -1,0 +1,6 @@
+{
+  "artifact_id": "asset-v1",
+  "passed": true,
+  "files": ["exports/asset-v1.blend"],
+  "evidence": ["export metadata validated"]
+}

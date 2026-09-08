@@ -1,0 +1,18 @@
+{
+  "milestones": [
+    {
+      "id": "blockout",
+      "objective": "Establish silhouette, proportions, and scene scale",
+      "allowed_tool_domain": "modeling",
+      "required_review_views": ["front", "side", "top", "perspective"],
+      "validation_checks": ["object scale", "naming", "loose geometry"]
+    },
+    {
+      "id": "lookdev",
+      "objective": "Apply material and texture strategy from the locked brief",
+      "allowed_tool_domain": "materials",
+      "required_review_views": ["perspective", "closeup"],
+      "validation_checks": ["required materials", "uv strategy"]
+    }
+  ]
+}

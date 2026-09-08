@@ -1,0 +1,6 @@
+{
+  "artifact_id": "asset-v1",
+  "passed": true,
+  "findings": [],
+  "evidence": ["mesh validation report", "scene organization report"]
+}

@@ -1,0 +1,10 @@
+{
+  "artifact_id": "asset-v1",
+  "passed": true,
+  "findings": [],
+  "evidence": ["front", "side", "top", "perspective"],
+  "scores": {
+    "silhouette": 9.0,
+    "brief_match": 9.0
+  }
+}

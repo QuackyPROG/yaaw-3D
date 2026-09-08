@@ -36,14 +36,17 @@ def append_event(job_dir: Path, event: str, payload: dict[str, Any] | None = Non
 
 
 def create_job(root: Path, request: str) -> Path:
+    request = request.strip()
+    if not request:
+        raise ValueError("request must be non-empty")
     slug = uuid4().hex[:12]
     job_dir = root / slug
-    for child in ("qa", "corrections", "renders", "exports"):
+    for child in ("qa", "corrections", "renders", "exports", "build"):
         (job_dir / child).mkdir(parents=True, exist_ok=True)
-    (job_dir / "request.md").write_text(request.strip() + "\n", encoding="utf-8")
+    (job_dir / "request.md").write_text(request + "\n", encoding="utf-8")
     write_json(job_dir / "answers.json", {})
     write_json(job_dir / "state.json", JobState(job_id=slug))
-    append_event(job_dir, "job.created", {"request": request.strip()})
+    append_event(job_dir, "job.created", {"request": request})
     return job_dir
 
 
@@ -63,3 +66,7 @@ def next_version(job_dir: Path, prefix: str) -> int:
         except (ValueError, IndexError):
             continue
     return max(versions, default=0) + 1
+
+
+def versioned_paths(job_dir: Path, prefix: str) -> list[Path]:
+    return sorted(job_dir.glob(f"{prefix}.v*.json"), key=lambda p: p.name)
